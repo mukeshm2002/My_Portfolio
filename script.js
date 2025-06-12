@@ -32,7 +32,7 @@ window.addEventListener('scroll', () => {
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="mukeshkannan509@gmail.com"]').forEach(anchor => {
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
         
@@ -48,81 +48,37 @@ document.querySelectorAll('a[href^="mukeshkannan509@gmail.com"]').forEach(anchor
     });
 });
 
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
-    const submitBtn = document.getElementById('submitBtn');
-    const formStatus = document.getElementById('formStatus');
-    
-    // Disable button and show loading state
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    formStatus.textContent = '';
-    formStatus.className = '';
-    
-    // Using EmailJS service (recommended approach)
-    // First, you'll need to set up EmailJS (free tier available)
-    if (typeof emailjs !== 'undefined') {
-        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
-            from_name: name,
-            from_email: email,
-            subject: subject,
-            message: message,
-            to_email: 'mukeshkannan509@gmail.com'
-        })
-        .then(function() {
-            formStatus.textContent = 'Message sent successfully!';
-            formStatus.className = 'success';
-            document.getElementById('contactForm').reset();
-        }, function(error) {
-            formStatus.textContent = 'Failed to send message. Please try again.';
-            formStatus.className = 'error';
-            console.error('EmailJS Error:', error);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Send Message';
-        });
-    } 
-    // Fallback to Formspree if EmailJS not available
-    else {
-        const formData = new FormData(this);
-        formData.append('_replyto', email);
-        formData.append('_subject', subject || 'New message from portfolio contact form');
-        formData.append('_to', 'mukeshkannan509@gmail.com');
+// Form submission
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        fetch('https://formspree.io/f/mukeshkannan509@gmail.com', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                formStatus.textContent = 'Message sent successfully!';
-                formStatus.className = 'success';
-                document.getElementById('contactForm').reset();
-            } else {
-                throw new Error('Form submission failed');
-            }
-        })
-        .catch(error => {
-            formStatus.textContent = 'Failed to send message. Please try again.';
-            formStatus.className = 'error';
-            console.error('Formspree Error:', error);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Send Message';
-        });
-    }
-});
+        const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        
+        // Change button text and disable it
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+        
+        // Simulate form submission (in a real scenario, you would use fetch or XMLHttpRequest)
+        setTimeout(() => {
+            submitButton.textContent = 'Message Sent!';
+            submitButton.style.backgroundColor = 'var(--success-color)';
+            
+            // Reset form after 2 seconds
+            setTimeout(() => {
+                this.reset();
+                submitButton.textContent = 'Send Message';
+                submitButton.style.backgroundColor = 'var(--primary-color)';
+                submitButton.disabled = false;
+                
+                // Show success message
+                alert('Thank you for your message! I will get back to you soon.');
+            }, 2000);
+        }, 1500);
+    });
+}
 
 // Project card hover effect
 const projectCards = document.querySelectorAll('.project-card');
