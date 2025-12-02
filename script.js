@@ -35,10 +35,8 @@ document.getElementById('year').textContent = new Date().getFullYear();
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
-        
         const targetId = this.getAttribute('href');
         const targetElement = document.querySelector(targetId);
-        
         if (targetElement) {
             window.scrollTo({
                 top: targetElement.offsetTop - 80,
@@ -48,35 +46,47 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Form submission
+// 🚀 REAL Web3Forms Contact Form Submission
 const contactForm = document.querySelector('.contact-form');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         const formData = new FormData(this);
         const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
         
-        // Change button text and disable it
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
         
-        // Simulate form submission (in a real scenario, you would use fetch or XMLHttpRequest)
-        setTimeout(() => {
-            submitButton.textContent = 'Message Sent!';
-            submitButton.style.backgroundColor = 'var(--success-color)';
-            
-            // Reset form after 2 seconds
-            setTimeout(() => {
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                submitButton.textContent = 'Message Sent! 🎉';
+                submitButton.style.backgroundColor = '#27ae60';
                 this.reset();
-                submitButton.textContent = 'Send Message';
-                submitButton.style.backgroundColor = 'var(--primary-color)';
+                setTimeout(() => {
+                    submitButton.textContent = originalText;
+                    submitButton.style.backgroundColor = '';
+                    submitButton.disabled = false;
+                }, 3000);
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Form Error:', error);
+            submitButton.textContent = 'Failed - Try Again';
+            submitButton.style.backgroundColor = '#e74c3c';
+            setTimeout(() => {
+                submitButton.textContent = originalText;
+                submitButton.style.backgroundColor = '';
                 submitButton.disabled = false;
-                
-                // Show success message
-                alert('Thank you for your message! I will get back to you soon.');
-            }, 2000);
-        }, 1500);
+            }, 3000);
+        });
     });
 }
 
@@ -86,7 +96,6 @@ projectCards.forEach(card => {
     card.addEventListener('mouseenter', () => {
         card.querySelector('.project-image img').style.transform = 'scale(1.1)';
     });
-    
     card.addEventListener('mouseleave', () => {
         card.querySelector('.project-image img').style.transform = 'scale(1)';
     });
@@ -98,7 +107,6 @@ certificationCards.forEach(card => {
     card.addEventListener('mouseenter', () => {
         card.querySelector('.certification-image img').style.transform = 'scale(1.05)';
     });
-    
     card.addEventListener('mouseleave', () => {
         card.querySelector('.certification-image img').style.transform = 'scale(1)';
     });
