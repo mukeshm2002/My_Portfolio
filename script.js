@@ -111,3 +111,4 @@ certificationCards.forEach(card => {
         card.querySelector('.certification-image img').style.transform = 'scale(1)';
     });
 });
+
